@@ -1,0 +1,12 @@
+# robots.txt for ResumeAI
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /app/
+Disallow: /api/
+Disallow: /login
+Disallow: /register
+
+# Sitemap
+Sitemap: https://resumeai.com/sitemap.xml
