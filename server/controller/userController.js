@@ -145,12 +145,12 @@ export const googleAuthCallback = async (req, res) => {
     }));
 
     res.redirect(
-      `${process.env.FRONTEND_URL}/auth/callback?token=${token}&user=${userParam}`
+      `${process.env.CLIENT_URL}/auth/callback?token=${token}&user=${userParam}`
     );
   } catch (error) {
     console.log(error);
     res.redirect(
-      `${process.env.FRONTEND_URL}/login?error=auth_failed`
+      `${process.env.CLIENT_URL}/login?error=auth_failed`
     );
   }
 };
