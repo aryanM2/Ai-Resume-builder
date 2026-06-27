@@ -27,7 +27,34 @@
     <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="/icon-192.png" />
     
+    <!-- Content Security Policy for external services -->
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://lumberjack.razorpay.com; connect-src 'self' http://localhost:3000 https://checkout.razorpay.com https://lumberjack.razorpay.com https://api.github.com https://generativelanguage.googleapis.com;">
+    
     <title>ResumeAI - AI-Powered Resume Builder</title>
+
+    <!-- Razorpay Checkout Script -->
+    <script async src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      // Fallback for Razorpay loading
+      window.razorpayRetries = 0;
+      const loadRazorpay = () => {
+        if (window.Razorpay) {
+          console.log('✓ Razorpay loaded successfully');
+          return;
+        }
+        if (window.razorpayRetries < 3) {
+          window.razorpayRetries++;
+          setTimeout(loadRazorpay, 1000);
+        } else {
+          console.warn('⚠ Razorpay failed to load after retries');
+        }
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadRazorpay);
+      } else {
+        setTimeout(loadRazorpay, 100);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

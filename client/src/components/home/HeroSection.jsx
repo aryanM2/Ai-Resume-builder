@@ -90,12 +90,12 @@ const HeroSection = () => {
                   <Zap className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">AI Resume Upload</h3>
-                  <p className="text-sm text-gray-600">Upload your PDF and let AI extract the data</p>
+                  <h3 className="font-bold text-gray-900">ATS Analyzer</h3>
+                  <p className="text-sm text-gray-600">Create and check ATS score of your resume</p>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold text-amber-600">$2</div>
+                <div className="text-3xl font-bold text-amber-600">₹69</div>
                 <div className="text-xs text-gray-500">one-time payment</div>
               </div>
             </div>
@@ -114,8 +114,8 @@ const HeroSection = () => {
               <div className="w-12 h-12 bg-pink-100 rounded-xl flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-pink-600" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">Quick Upload</h3>
-              <p className="text-gray-600 text-sm">Upload your existing PDF resume and let AI extract the data</p>
+              <h3 className="font-bold text-gray-900 mb-2">ATS score Analyzer</h3>
+              <p className="text-gray-600 text-sm">Analyze your resume and give a summary and recommendation to improve your resume</p>
             </div>
             <div onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })} className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer border border-gray-100 hover:border-green-300 hover:scale-105">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4">

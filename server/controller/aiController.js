@@ -31,8 +31,8 @@ try{
     
 }catch(error){
     console.error("Error in enhanceProfessionalSummary:", error);
-    if (error.status === 429 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
-        return res.status(503).json({message:"AI enhancement feature is currently unavailable due to quota limits. Please try again later."});
+    if (error.status === 429 || error.status === 503 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
+        return res.status(503).json({message:"AI feature is currently unavailable due to high demand. Please try again later."});
     }
     return res.status(500).json({message:"Internal server error"});
 }
@@ -64,8 +64,8 @@ export const enhanceJD= async(req,res)=>{
         return res.status(201).json({enhancedJD})
     } catch (error) {
         console.error("Error in enhanceJD:", error);
-        if (error.status === 429 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
-            return res.status(503).json({message:"AI enhancement feature is currently unavailable due to quota limits. Please try again later."});
+        if (error.status === 429 || error.status === 503 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
+            return res.status(503).json({message:"AI feature is currently unavailable due to high demand. Please try again later."});
         }
         return res.status(500).json({message:"Internal server error"});
     }
@@ -98,103 +98,54 @@ export const enhanceProject= async(req,res)=>{
         return res.status(201).json({enhancedProject})
     } catch (error) {
         console.error("Error in enhanceProject:", error);
-        if (error.status === 429 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
-            return res.status(503).json({message:"AI enhancement feature is currently unavailable due to quota limits. Please try again later."});
+        if (error.status === 429 || error.status === 503 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
+            return res.status(503).json({message:"AI feature is currently unavailable due to high demand. Please try again later."});
         }
         return res.status(500).json({message:"Internal server error"});
     }
     
 }
-// Parse resume text into structured JSON format using OpenAI
-export const uploadResume = async (req, res) => {
-    try {
-        const { resumeText, title } = req.body;
-        const userId = req.userId;
 
-        if (!resumeText) {
-            return res.status(400).json({ message: 'Missing required fields' });
-        }
+const checkSubscription = (req, res, next) => {
+    if (!req.user || !req.user.isSubscribed) {
+        return res.status(403).json({ message: "Subscription required for this feature." });
+    }
+    next();
+};
 
-        const response = await getOpenAI().chat.completions.create({
-            model: process.env.AI_MODEL,
-            messages: [
-                {
-                    role: "system",
-                    content: `You are an expert resume parser. Your task is to extract structured resume data from the provided resume text. 
-                    Return the data in valid JSON format with the following structure:
-                    {
-                        "personal_info": {
-                            "name": "",
-                            "email": "",
-                            "phone": "",
-                            "location": "",
-                            "linkedin": "",
-                            "github": "",
-                            "website": "",
-                            "image": ""
-                        },
-                        "professional_summary": "",
-                        "experience": [
-                            {
-                                "company": "",
-                                "position": "",
-                                "startDate": "",
-                                "endDate": "",
-                                "description": ""
-                            }
-                        ],
-                        "education": [
-                            {
-                                "school": "",
-                                "degree": "",
-                                "field": "",
-                                "startDate": "",
-                                "endDate": ""
-                            }
-                        ],
-                        "skills": [],
-                        "projects": [
-                            {
-                                "name": "",
-                                "description": "",
-                                "technologies": []
-                            }
-                        ]
-                    }
-                    Only return the JSON object, no additional text or explanations.`
-                },
-                {
-                    role: "user",
-                    content: `extract data from the given resume: ${resumeText}`
-                }
-            ],
-            response_format: {
-                type: 'json_object'
-            }
-        });
+//ai ats score analyzer
+export const analyzeAts = [checkSubscription, async(req,res)=>{
+    try{
+        console.log("started generating")
+        const { resumeText, jobDescription } = req.body;
 
-        const parsedResume = JSON.parse(response.choices[0].message.content);
-
-        if (parsedResume && Object.keys(parsedResume).length > 0) {
-             // Add title and userId to the parsed resume
-        parsedResume.title = title || "Untitled Resume";
-        parsedResume.userId = userId;
-        const newResume = await Resume.create({userId,title,...parsedResume})
-
-        return res.json({resumeId:newResume._id});
-        }
-        else{
-            res.json({message:"empty response from AI"});
-
+        if(!resumeText || !jobDescription){
+            return res.status(400).json({message:"Resume text and job description are required"});
         }
         
-       
-    } catch (error) {
-        console.error("Error in uploadResume:", error);
-        if (error.status === 429 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
-            return res.status(503).json({message:"AI enhancement feature is currently unavailable due to quota limits. Please try again later."});
-        }
-        return res.status(500).json({ message: "Internal server error" });
-    }
-}
+        const response= await getOpenAI().chat.completions.create({
+            model:process.env.AI_MODEL,
+            response_format: { type: "json_object" },
+            messages:[
+                {
+                    role:"system",
+                    "content":`You are an advanced ATS (Applicant Tracking System) resume analyzer. Your task is to analyze a resume against a job description. Provide a detailed analysis in JSON format. The JSON object must have the following structure: { "matchScore": <number>, "matchSummary": "<string>", "missingKeywords": ["<string>"], "improvementSuggestions": "<string>" }. The matchScore should be a number between 0 and 100. The matchSummary should be a 2-3 sentence summary. The missingKeywords should be an array of important keywords from the job description missing in the resume. The improvementSuggestions should be a single string with actionable suggestions, using '\\n- ' for bullet points. Return only the JSON object.`
+                },
+                {
+                    role:"user",
+                    content:`Resume:\n${resumeText}\n\nJob Description:\n${jobDescription}`
+                }
+            ]
+        })
 
+        const analysisResult = JSON.parse(response.choices[0].message.content);
+        return res.status(200).json({analysisResult})
+        
+    }catch(error){
+        console.error("Error in analyzeAts:", error);
+        if (error.status === 429 || error.status === 503 || error.code === 'insufficient_quota' || error.message?.includes('quota')) {
+            return res.status(503).json({message:"AI analysis feature is currently unavailable due to high demand. Please try again later."});
+        }
+        return res.status(500).json({message:"Internal server error"});
+    }
+}]

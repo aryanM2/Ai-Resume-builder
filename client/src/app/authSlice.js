@@ -56,6 +56,21 @@ export const googleLogin = createAsyncThunk(
   }
 );
 
+export const fetchUserProfile = createAsyncThunk(
+  'auth/fetchUserProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.getProfile();
+      const user = response.data.user;
+      // Update localStorage with latest user data
+      localStorage.setItem('user', JSON.stringify(user));
+      return user;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user profile');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -68,6 +83,11 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    updateUserSubscription: (state, action) => {
+        state.user = action.payload;
+        // Persist the updated user data to localStorage
+        localStorage.setItem('user', JSON.stringify(action.payload));
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -117,9 +137,21 @@ const authSlice = createSlice({
       .addCase(googleLogin.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      // Fetch User Profile
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearError } = authSlice.actions;
+export const { clearError, updateUserSubscription } = authSlice.actions;
 export default authSlice.reducer;

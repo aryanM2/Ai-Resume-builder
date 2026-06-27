@@ -1,5 +1,6 @@
 import express from "express";
-import { registerUser, LoginUser, forgotPassword, googleAuth, googleAuthCallback } from "../controller/userController.js";
+import { registerUser, LoginUser, forgotPassword, googleAuth, googleAuthCallback, getCurrentUser } from "../controller/userController.js";
+import { protect } from "../middleware/authMiddleware.js";
 import passport from "../config/googleAuth.js";
 
 const authRouter = express.Router();
@@ -8,6 +9,7 @@ const authRouter = express.Router();
 authRouter.post("/register", registerUser);
 authRouter.post("/login", LoginUser);
 authRouter.put("/forgot-password", forgotPassword);
+authRouter.get("/profile", protect, getCurrentUser);
 authRouter.get("/google", googleAuth);
 authRouter.get(
   "/google/callback",

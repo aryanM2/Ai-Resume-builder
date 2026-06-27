@@ -86,14 +86,14 @@ export const enhanceProject = createAsyncThunk(
   }
 );
 
-export const uploadResume = createAsyncThunk(
-  'resume/uploadResume',
-  async ({ resumeText, title }, { rejectWithValue }) => {
+export const analyzeAtsScore = createAsyncThunk(
+  'resume/analyzeAts',
+  async ({ resumeText, jobDescription }, { rejectWithValue }) => {
     try {
-      const response = await aiAPI.uploadResume({ resumeText, title });
-      return response.data;
+      const response = await aiAPI.analyzeAts({ resumeText, jobDescription });
+      return response.data.analysisResult;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to upload resume');
+      return rejectWithValue(error.response?.data?.message || 'Failed to analyze ATS score');
     }
   }
 );
@@ -108,6 +108,9 @@ const resumeSlice = createSlice({
     enhancedSummary: null,
     enhancedJD: null,
     enhancedProject: null,
+    isAtsLoading: false,
+    atsAnalysisResult: null,
+    atsError: null,
   },
   reducers: {
     setCurrentResume: (state, action) => {
@@ -211,18 +214,20 @@ const resumeSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-      // Upload Resume
-      .addCase(uploadResume.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
+      // Analyze ATS Score
+      .addCase(analyzeAtsScore.pending, (state) => {
+        state.isAtsLoading = true;
+        state.atsError = null;
+        state.atsAnalysisResult = null;
       })
-      .addCase(uploadResume.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.currentResume = action.payload;
+      .addCase(analyzeAtsScore.fulfilled, (state, action) => {
+        state.isAtsLoading = false;
+        state.atsAnalysisResult = action.payload;
       })
-      .addCase(uploadResume.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
+      .addCase(analyzeAtsScore.rejected, (state, action) => {
+        state.isAtsLoading = false;
+        state.atsError = action.payload;
+        state.atsAnalysisResult = null;
       });
   },
 });

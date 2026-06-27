@@ -17,7 +17,15 @@ const UserSchema = new mongoose.Schema({
     },
     avatar:{
         type:String
-    }
+    },
+    isSubscribed: {
+        type: Boolean,
+        default: false
+    },
+    razorpay_payment_id: {
+        type: String,
+        default: null
+    },
 },{timestamps:true})
 
 UserSchema.methods.comparePassword = function(password){

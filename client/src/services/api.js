@@ -41,6 +41,7 @@ api.interceptors.response.use(
 export const authAPI = {
   register: (data) => api.post('/api/users/register', data),
   login: (data) => api.post('/api/users/login', data),
+  getProfile: () => api.get('/api/users/profile'),
 };
 
 // Resume API
@@ -57,7 +58,12 @@ export const aiAPI = {
   enhanceSummary: (data) => api.post('/api/ai/enhance-summary', data),
   enhanceJD: (data) => api.post('/api/ai/enhance-jd', data),
   enhanceProject: (data) => api.post('/api/ai/enhance-project', data),
-  uploadResume: (data) => api.post('/api/ai/upload-resume', data),
+  analyzeAts: (data) => api.post('/api/ai/analyze-ats', data),
+};
+
+export const paymentAPI = {
+  createOrder: () => api.post('/api/payment/order'),
+  verifyPayment: (data) => api.post('/api/payment/verify', data),
 };
 
 export default api;
