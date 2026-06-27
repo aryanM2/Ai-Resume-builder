@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import Banner from '../components/home/banner'
+import Banner from '../components/home/Banner'
 import HeroSection from '../components/home/HeroSection'
 import Footer from '../components/Global/Footer'
 import SEO from '../components/SEO/SEO'
@@ -14,7 +14,7 @@ const Home = () => {
     if (user) {
       navigate('/app', { replace: true })
     }
-  }, [user, navigate])
+  }, [user, navigate])  
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
