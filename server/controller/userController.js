@@ -132,7 +132,7 @@ export const googleAuthCallback = async (req, res) => {
   try {
     if (!req.user) {
       return res.redirect(
-        `${process.env.FRONTEND_URL}/login?error=no_user`
+        `${process.env.CLIENT_URL}/login?error=no_user`
       );
     }
 
