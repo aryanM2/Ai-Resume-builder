@@ -461,7 +461,7 @@ ${resume.education
 
                 {showAtsModal && (
                     <div className='fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
-                        <div className='bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 relative'>
+                        <div className='bg-white rounded-2xl shadow-xl w-full max-w-2xl p-4 sm:p-6 relative'>
                             <div className='flex justify-between items-center mb-2'>
                                 <h2 className='text-xl font-bold text-gray-800'>ATS Score Analyzer</h2>
                                 <XIcon className='text-gray-400 hover:text-gray-600 cursor-pointer transition-colors' onClick={() => setShowAtsModal(false)} />
@@ -497,7 +497,7 @@ ${resume.education
                                 <div className="space-y-4">
                                     <div className="text-center">
                                         <p className="text-lg font-medium text-gray-600">Match Score</p>
-                                        <p className="text-6xl font-bold text-indigo-600">{atsAnalysisResult.matchScore}%</p>
+                                        <p className="text-5xl md:text-6xl font-bold text-indigo-600">{atsAnalysisResult.matchScore}%</p>
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-gray-800">Summary</h4>
